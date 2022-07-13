@@ -6,6 +6,7 @@ import { reactive, ref } from "vue";
 
 const notaInput = reactive({ descricao: "", titulo: "" });
 const notas = ref([]);
+const editandoNota = ref(false);
 
 function adicionarNota() {
   notas.value.push({ ...notaInput });
@@ -15,10 +16,27 @@ function adicionarNota() {
 function removerNota(nota) {
   notas.value = notas.value.filter((obj) => obj !== nota);
 }
-function editar(titulo, descricao) {
-  console.log("Leandro");
+let notaObj = "";
+function salvarEdicao() {
+  notaObj.titulo = notaInput.titulo;
+  notaObj.descricao = notaInput.descricao;
+
+  // limpei o input aqui
+  notaInput.descricao = "";
+  notaInput.titulo = "";
+
+  editandoNota.value = false;
+}
+
+function editar(nota) {
+  notaObj = nota;
+  notaInput.titulo = nota.titulo;
+  notaInput.descricao = nota.descricao;
+
+  editandoNota.value = true;
 }
 </script>
+
 <template>
   <div>Notas</div>
   <div style="margin: 10px">
@@ -29,6 +47,13 @@ function editar(titulo, descricao) {
   </div>
 
   <Button
+    v-if="editandoNota"
+    label="Salvar"
+    class="p-button-rounded p-button-secondary"
+    @click="salvarEdicao()"
+  />
+  <Button
+    v-else
     label="Adicionar Nota"
     class="p-button-rounded p-button-secondary"
     @click="adicionarNota"
@@ -44,8 +69,9 @@ function editar(titulo, descricao) {
       <Button
         label="Editar"
         class="p-button-rounded p-button-secondary"
-        @click="editar()"
+        @click="editar(nota)"
       />
+
       <Button
         label="Delete"
         class="p-button-rounded p-button-secondary"
